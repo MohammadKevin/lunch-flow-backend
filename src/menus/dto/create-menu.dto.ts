@@ -13,7 +13,7 @@ import { Type } from 'class-transformer'
 export class CreateMenuDto {
   @IsString()
   @IsNotEmpty()
-  categoryId!: string
+  categoryId: string
 
   @IsString()
   @IsNotEmpty()
