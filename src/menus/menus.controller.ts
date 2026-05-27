@@ -9,7 +9,6 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { MenusService } from './menus.service'
@@ -24,31 +23,14 @@ export class MenusController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FileInterceptor('image'),
-  )
+  @UseInterceptors(FileInterceptor('image'))
   @Post(':sellerId')
   async createMenu(
-    @Param('sellerId')
-    sellerId: string,
-
-    @Body(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: false,
-      }),
-    )
-    createMenuDto: CreateMenuDto,
-
-    @UploadedFile()
-    file?: Express.Multer.File,
+    @Param('sellerId') sellerId: string,
+    @Body() createMenuDto: CreateMenuDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return await this.menusService.createMenu(
-      sellerId,
-      createMenuDto,
-      file,
-    )
+    return await this.menusService.createMenu(sellerId, createMenuDto, file)
   }
 
   @Get()
@@ -68,60 +50,30 @@ export class MenusController {
 
   @Get('seller/:sellerId')
   async getMenusBySeller(
-    @Param('sellerId')
-    sellerId: string,
+    @Param('sellerId') sellerId: string,
   ) {
-    return await this.menusService.getMenusBySeller(
-      sellerId,
-    )
+    return await this.menusService.getMenusBySeller(sellerId)
   }
 
   @Get(':id')
-  async getMenuById(
-    @Param('id')
-    id: string,
-  ) {
-    return await this.menusService.getMenuById(
-      id,
-    )
+  async getMenuById(@Param('id') id: string) {
+    return await this.menusService.getMenuById(id)
   }
 
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FileInterceptor('image'),
-  )
+  @UseInterceptors(FileInterceptor('image'))
   @Patch(':id')
   async updateMenu(
-    @Param('id')
-    id: string,
-
-    @Body(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: false,
-      }),
-    )
-    updateMenuDto: UpdateMenuDto,
-
-    @UploadedFile()
-    file?: Express.Multer.File,
+    @Param('id') id: string,
+    @Body() updateMenuDto: UpdateMenuDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return await this.menusService.updateMenu(
-      id,
-      updateMenuDto,
-      file,
-    )
+    return await this.menusService.updateMenu(id, updateMenuDto, file)
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteMenu(
-    @Param('id')
-    id: string,
-  ) {
-    return await this.menusService.deleteMenu(
-      id,
-    )
+  async deleteMenu(@Param('id') id: string) {
+    return await this.menusService.deleteMenu(id)
   }
 }
