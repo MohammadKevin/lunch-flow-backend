@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -52,15 +46,15 @@ enum OrderType {
 }
 
 model User {
-  id            String          @id @default(uuid()) @db.Uuid
-  fullName      String
-  email         String          @unique
-  password      String
-  role          Role            @default(CUSTOMER)
-  phone         String?
-  profileImage  String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id           String   @id @default(uuid()) @db.Uuid
+  fullName     String
+  email        String   @unique
+  password     String
+  role         Role     @default(CUSTOMER)
+  phone        String?
+  profileImage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   sellerProfile Seller?
   cart          Cart?
@@ -71,192 +65,188 @@ model User {
 }
 
 model Seller {
-  id            String          @id @default(uuid()) @db.Uuid
-  userId        String          @unique @db.Uuid
-  storeNumber   String          @unique
-  storeName     String
-  ownerName     String
-  phone         String
-  address       String
-  description   String?
-  storeLogo     String?
-  openTime      String?
-  closeTime     String?
-  qrisImage     String?
-  status        SellerStatus    @default(PENDING)
-  rejectReason  String?
-  isOpen        Boolean         @default(true)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id           String       @id @default(uuid()) @db.Uuid
+  userId       String       @unique @db.Uuid
+  storeNumber  String       @unique
+  storeName    String
+  ownerName    String
+  phone        String
+  address      String
+  description  String?
+  storeLogo    String?
+  openTime     String?
+  closeTime    String?
+  qrisImage    String?
+  status       SellerStatus @default(PENDING)
+  rejectReason String?
+  isOpen       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  categories    Category[]
-  menus         Menu[]
-  orders        Order[]
+  menus  Menu[]
+  orders Order[]
 }
 
 model Category {
-  id            String          @id @default(uuid()) @db.Uuid
-  sellerId      String          @db.Uuid
-  name          String
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  seller        Seller          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-
-  menus         Menu[]
+  menus Menu[]
 }
 
 model Menu {
-  id                String        @id @default(uuid()) @db.Uuid
-  sellerId          String        @db.Uuid
-  categoryId        String        @db.Uuid
-  name              String
-  description       String?
-  image             String?
-  imagePublicId     String?
-  price             Float
-  stock             Int           @default(0)
-  isAvailable       Boolean       @default(true)
-  isRecommended     Boolean       @default(false)
-  preparationTime   Int           @default(5)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  id              String   @id @default(uuid()) @db.Uuid
+  sellerId        String   @db.Uuid
+  categoryId      String   @db.Uuid
+  name            String
+  description     String?
+  image           String?
+  imagePublicId   String?
+  price           Float
+  stock           Int      @default(0)
+  isAvailable     Boolean  @default(true)
+  isRecommended   Boolean  @default(false)
+  preparationTime Int      @default(5)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  seller            Seller        @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  seller Seller @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 
-  category          Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  cartItems         CartItem[]
-  orderItems        OrderItem[]
-  reviews           Review[]
-  favorites         Favorite[]
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  reviews    Review[]
+  favorites  Favorite[]
 }
 
 model Cart {
-  id            String          @id @default(uuid()) @db.Uuid
-  userId        String          @unique @db.Uuid
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  items         CartItem[]
+  items CartItem[]
 }
 
 model CartItem {
-  id            String          @id @default(uuid()) @db.Uuid
-  cartId        String          @db.Uuid
-  menuId        String          @db.Uuid
-  quantity      Int             @default(1)
-  notes         String?
-  createdAt     DateTime        @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  cartId    String   @db.Uuid
+  menuId    String   @db.Uuid
+  quantity  Int      @default(1)
+  notes     String?
+  createdAt DateTime @default(now())
 
-  cart          Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
-  menu          Menu            @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
 }
 
 model Order {
-  id                  String          @id @default(uuid()) @db.Uuid
-  userId              String          @db.Uuid
-  sellerId            String          @db.Uuid
-  orderCode           String          @unique
-  orderType           OrderType
-  queueNumber         Int?
-  pickupCode          String?
-  deliveryAddress     String?
-  totalPrice          Float
-  estimatedReadyAt    DateTime?
-  notes               String?
-  status              OrderStatus     @default(PENDING)
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  id               String      @id @default(uuid()) @db.Uuid
+  userId           String      @db.Uuid
+  sellerId         String      @db.Uuid
+  orderCode        String      @unique
+  orderType        OrderType
+  queueNumber      Int?
+  pickupCode       String?
+  deliveryAddress  String?
+  totalPrice       Float
+  estimatedReadyAt DateTime?
+  notes            String?
+  status           OrderStatus @default(PENDING)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
-  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  seller              Seller          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  seller Seller @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 
-  items               OrderItem[]
-  payment             Payment?
-  queue               Queue?
+  items   OrderItem[]
+  payment Payment?
+  queue   Queue?
 }
 
 model OrderItem {
-  id            String          @id @default(uuid()) @db.Uuid
-  orderId       String          @db.Uuid
-  menuId        String          @db.Uuid
-  quantity      Int
-  price         Float
-  subtotal      Float
-  notes         String?
-  createdAt     DateTime        @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  orderId   String   @db.Uuid
+  menuId    String   @db.Uuid
+  quantity  Int
+  price     Float
+  subtotal  Float
+  notes     String?
+  createdAt DateTime @default(now())
 
-  order         Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  menu          Menu            @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
-  id                    String            @id @default(uuid()) @db.Uuid
-  orderId               String            @unique @db.Uuid
-  paymentMethod         PaymentMethod
-  paymentStatus         PaymentStatus     @default(UNPAID)
+  id            String        @id @default(uuid()) @db.Uuid
+  orderId       String        @unique @db.Uuid
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(UNPAID)
 
-  paymentProof          String?
-  paymentProofPublicId  String?
+  paymentProof         String?
+  paymentProofPublicId String?
 
-  paidAt                DateTime?
-  createdAt             DateTime          @default(now())
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
 
-  order                 Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Queue {
-  id                String          @id @default(uuid()) @db.Uuid
-  orderId           String          @unique @db.Uuid
-  queueNumber       Int
-  currentPosition   Int
-  estimatedWait     Int
-  createdAt         DateTime        @default(now())
+  id              String   @id @default(uuid()) @db.Uuid
+  orderId         String   @unique @db.Uuid
+  queueNumber     Int
+  currentPosition Int
+  estimatedWait   Int
+  createdAt       DateTime @default(now())
 
-  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Review {
-  id            String          @id @default(uuid()) @db.Uuid
-  userId        String          @db.Uuid
-  menuId        String          @db.Uuid
-  rating        Int
-  comment       String?
-  createdAt     DateTime        @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  menuId    String   @db.Uuid
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
 
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  menu          Menu            @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
 }
 
 model Favorite {
-  id            String          @id @default(uuid()) @db.Uuid
-  userId        String          @db.Uuid
-  menuId        String          @db.Uuid
-  createdAt     DateTime        @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  menuId    String   @db.Uuid
+  createdAt DateTime @default(now())
 
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  menu          Menu            @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
 
   @@unique([userId, menuId])
 }
 
 model Notification {
-  id            String          @id @default(uuid()) @db.Uuid
-  userId        String          @db.Uuid
-  title         String
-  message       String
-  isRead        Boolean         @default(false)
-  createdAt     DateTime        @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

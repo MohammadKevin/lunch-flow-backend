@@ -15,12 +15,10 @@ export class CategoriesService {
   ) {}
 
   async createCategory(
-    sellerId: string,
     createCategoryDto: CreateCategoryDto,
   ) {
     return await this.prisma.category.create({
       data: {
-        sellerId,
         name: createCategoryDto.name,
       },
     })
@@ -28,24 +26,6 @@ export class CategoriesService {
 
   async getAllCategories() {
     return await this.prisma.category.findMany({
-      include: {
-        seller: true,
-      },
-
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
-  }
-
-  async getCategoriesBySeller(
-    sellerId: string,
-  ) {
-    return await this.prisma.category.findMany({
-      where: {
-        sellerId,
-      },
-
       orderBy: {
         createdAt: 'desc',
       },
