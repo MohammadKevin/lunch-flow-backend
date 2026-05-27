@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
   Req,
   UseGuards,
@@ -21,6 +22,7 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
+  @HttpCode(200)
   @Post('login')
   async login(
     @Body() loginDto: LoginDto,
@@ -30,6 +32,7 @@ export class AuthController {
     )
   }
 
+  @HttpCode(201)
   @Post('register/customer')
   async registerCustomer(
     @Body()
@@ -40,6 +43,7 @@ export class AuthController {
     )
   }
 
+  @HttpCode(201)
   @Post('register/seller')
   async registerSeller(
     @Body()
