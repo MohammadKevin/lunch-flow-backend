@@ -22,6 +22,7 @@ export class SellersService {
     return await this.prisma.seller.findMany({
       include: {
         user: true,
+        menus: true,
       },
 
       orderBy: {
@@ -38,6 +39,11 @@ export class SellersService {
 
       include: {
         user: true,
+        menus: true,
+      },
+
+      orderBy: {
+        createdAt: 'desc',
       },
     })
   }
@@ -50,6 +56,11 @@ export class SellersService {
 
       include: {
         user: true,
+        menus: true,
+      },
+
+      orderBy: {
+        createdAt: 'desc',
       },
     })
   }
@@ -63,7 +74,6 @@ export class SellersService {
 
         include: {
           user: true,
-          categories: true,
           menus: true,
         },
       })
