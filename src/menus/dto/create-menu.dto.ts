@@ -23,16 +23,32 @@ export class CreateMenuDto {
   @IsString()
   description?: string
 
-  @Transform(({ value }) =>
-    parseFloat(value),
-  )
+  @Transform(({ value }) => {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ''
+    ) {
+      return 0
+    }
+
+    return Number(value)
+  })
   @IsNumber()
   @Min(0)
   price!: number
 
-  @Transform(({ value }) =>
-    parseInt(value),
-  )
+  @Transform(({ value }) => {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ''
+    ) {
+      return 0
+    }
+
+    return Number(value)
+  })
   @IsInt()
   @Min(0)
   stock!: number
@@ -56,9 +72,17 @@ export class CreateMenuDto {
   isRecommended?: boolean
 
   @IsOptional()
-  @Transform(({ value }) =>
-    parseInt(value),
-  )
+  @Transform(({ value }) => {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ''
+    ) {
+      return 1
+    }
+
+    return Number(value)
+  })
   @IsInt()
   @Min(1)
   preparationTime?: number
