@@ -30,6 +30,16 @@ export class PaymentsController {
     return await this.paymentsService.getAllPayments()
   }
 
+  @Get('seller/:sellerId')
+  async getPaymentsBySeller(
+    @Param('sellerId')
+    sellerId: string,
+  ) {
+    return await this.paymentsService.getPaymentsBySeller(
+      sellerId,
+    )
+  }
+
   @Get(':id')
   async getPaymentById(
     @Param('id')

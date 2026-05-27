@@ -185,4 +185,28 @@ export class PaymentsService {
       },
     })
   }
+
+  async getPaymentsBySeller(
+  sellerId: string,
+) {
+  return await this.prisma.payment.findMany({
+    where: {
+      order: {
+        sellerId,
+      },
+    },
+
+    include: {
+      order: {
+        include: {
+          user: true,
+        },
+      },
+    },
+
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+}
 }
