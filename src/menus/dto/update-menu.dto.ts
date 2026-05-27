@@ -7,9 +7,7 @@ import {
   Min,
 } from 'class-validator'
 
-import {
-  Transform,
-} from 'class-transformer'
+import { Transform } from 'class-transformer'
 
 export class UpdateMenuDto {
   @IsOptional()
@@ -26,7 +24,7 @@ export class UpdateMenuDto {
 
   @IsOptional()
   @Transform(({ value }) =>
-    Number(value),
+    parseFloat(value),
   )
   @IsNumber()
   @Min(0)
@@ -34,7 +32,7 @@ export class UpdateMenuDto {
 
   @IsOptional()
   @Transform(({ value }) =>
-    Number(value),
+    parseInt(value),
   )
   @IsInt()
   @Min(0)
@@ -43,6 +41,7 @@ export class UpdateMenuDto {
   @IsOptional()
   @Transform(
     ({ value }) =>
+      value === true ||
       value === 'true',
   )
   @IsBoolean()
@@ -51,6 +50,7 @@ export class UpdateMenuDto {
   @IsOptional()
   @Transform(
     ({ value }) =>
+      value === true ||
       value === 'true',
   )
   @IsBoolean()
@@ -58,7 +58,7 @@ export class UpdateMenuDto {
 
   @IsOptional()
   @Transform(({ value }) =>
-    Number(value),
+    parseInt(value),
   )
   @IsInt()
   @Min(1)
