@@ -7,7 +7,9 @@ import {
   Min,
 } from 'class-validator'
 
-import { Type } from 'class-transformer'
+import {
+  Transform,
+} from 'class-transformer'
 
 export class UpdateMenuDto {
   @IsOptional()
@@ -23,29 +25,41 @@ export class UpdateMenuDto {
   description?: string
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    Number(value),
+  )
   @IsNumber()
   @Min(0)
   price?: number
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    Number(value),
+  )
   @IsInt()
   @Min(0)
   stock?: number
 
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(
+    ({ value }) =>
+      value === 'true',
+  )
   @IsBoolean()
   isAvailable?: boolean
 
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(
+    ({ value }) =>
+      value === 'true',
+  )
   @IsBoolean()
   isRecommended?: boolean
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    Number(value),
+  )
   @IsInt()
   @Min(1)
   preparationTime?: number

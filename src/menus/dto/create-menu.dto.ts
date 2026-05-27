@@ -8,12 +8,15 @@ import {
   Min,
 } from 'class-validator'
 
-import { Type } from 'class-transformer'
+import {
+  Transform,
+  Type,
+} from 'class-transformer'
 
 export class CreateMenuDto {
   @IsString()
   @IsNotEmpty()
-  categoryId: string
+  categoryId!: string
 
   @IsString()
   @IsNotEmpty()
@@ -23,28 +26,40 @@ export class CreateMenuDto {
   @IsString()
   description?: string
 
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    Number(value),
+  )
   @IsNumber()
   @Min(0)
   price!: number
 
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    Number(value),
+  )
   @IsInt()
   @Min(0)
   stock!: number
 
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(
+    ({ value }) =>
+      value === 'true',
+  )
   @IsBoolean()
   isAvailable?: boolean
 
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(
+    ({ value }) =>
+      value === 'true',
+  )
   @IsBoolean()
   isRecommended?: boolean
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    Number(value),
+  )
   @IsInt()
   @Min(1)
   preparationTime?: number
