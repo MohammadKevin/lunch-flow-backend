@@ -43,14 +43,16 @@ async function bootstrap() {
   app.use(morgan('dev'))
 
   app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
 
-      forbidNonWhitelisted: true,
-
-      transform: true,
-    }),
-  )
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+  }),
+)
 
   const config =
     new DocumentBuilder()
