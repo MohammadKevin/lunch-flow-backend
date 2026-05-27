@@ -9,15 +9,12 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common'
-
 import { FileInterceptor } from '@nestjs/platform-express'
-
 import { MenusService } from './menus.service'
-
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
-
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
 @Controller('menus')
@@ -35,7 +32,13 @@ export class MenusController {
     @Param('sellerId')
     sellerId: string,
 
-    @Body()
+    @Body(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: false,
+      }),
+    )
     createMenuDto: CreateMenuDto,
 
     @UploadedFile()
@@ -92,7 +95,13 @@ export class MenusController {
     @Param('id')
     id: string,
 
-    @Body()
+    @Body(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: false,
+      }),
+    )
     updateMenuDto: UpdateMenuDto,
 
     @UploadedFile()
