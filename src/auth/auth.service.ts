@@ -106,7 +106,7 @@ export class AuthService {
       role: user.role,
     },
   }
-}
+}`
 
   async registerCustomer(
     registerCustomerDto: RegisterCustomerDto,
