@@ -54,33 +54,59 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.validateUser(
-      loginDto.email,
-      loginDto.password,
-    )
+  const user = await this.validateUser(
+    loginDto.email,
+    loginDto.password,
+  )
 
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
+  if (user.role === Role.SELLER) {
+    const seller =
+      await this.prisma.seller.findUnique({
+        where: {
+          userId: user.id,
+        },
+      })
+
+    if (!seller) {
+      throw new UnauthorizedException(
+        'Seller profile not found',
+      )
     }
 
-    const accessToken =
-      await this.jwtService.signAsync(payload)
-
-    return {
-      message: 'Login successful',
-
-      accessToken,
-
-      user: {
-        id: user.id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-      },
+    if (
+      seller.status !==
+      'APPROVED'
+    ) {
+      throw new UnauthorizedException(
+        'Your seller account is waiting for admin approval',
+      )
     }
   }
+
+  const payload = {
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+  }
+
+  const accessToken =
+    await this.jwtService.signAsync(
+      payload,
+    )
+
+  return {
+    message: 'Login successful',
+
+    accessToken,
+
+    user: {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+    },
+  }
+}
 
   async registerCustomer(
     registerCustomerDto: RegisterCustomerDto,
