@@ -1,5 +1,7 @@
 import { ValidationPipe } from '@nestjs/common'
+
 import { ConfigService } from '@nestjs/config'
+
 import { NestFactory } from '@nestjs/core'
 
 import {
@@ -8,8 +10,11 @@ import {
 } from '@nestjs/swagger'
 
 import helmet from 'helmet'
+
 import compression from 'compression'
+
 import cookieParser from 'cookie-parser'
+
 import morgan from 'morgan'
 
 import { AppModule } from './app.module'
@@ -26,9 +31,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api')
 
   app.enableCors({
-    origin: '*',
-
-    credentials: true,
+    origin: true,
   })
 
   app.use(helmet())
