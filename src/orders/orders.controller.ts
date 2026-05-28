@@ -93,4 +93,13 @@ export class OrdersController {
       id,
     )
   }
+
+  @Get('favorites/me')
+async getFavoriteMenus(
+  @Req() req: any,
+) {
+  return await this.ordersService.getFavoriteMenus(
+    req.user.id,
+  )
+}
 }

@@ -523,4 +523,56 @@ export class OrdersService {
 
     return cancelledOrder
   }
+
+  async getFavoriteMenus(
+  userId: string,
+) {
+  const orderItems =
+    await this.prisma.orderItem.groupBy({
+      by: ['menuId'],
+
+      where: {
+        order: {
+          userId,
+        },
+      },
+
+      _sum: {
+        quantity: true,
+      },
+
+      orderBy: {
+        _sum: {
+          quantity: 'desc',
+        },
+      },
+
+      take: 10,
+    })
+
+  const menuIds =
+    orderItems.map(
+      (item) => item.menuId,
+    )
+
+  const menus =
+    await this.prisma.menu.findMany({
+      where: {
+        id: {
+          in: menuIds,
+        },
+      },
+
+      include: {
+        seller: true,
+        category: true,
+      },
+    })
+
+  return menus.sort(
+    (a, b) =>
+      menuIds.indexOf(a.id) -
+      menuIds.indexOf(b.id),
+  )
+}
 }
