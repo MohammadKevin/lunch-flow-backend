@@ -1,4 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 
 import { PrismaService } from '../prisma/prisma.service'
 
@@ -6,13 +9,14 @@ import { PrismaService } from '../prisma/prisma.service'
 export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   async getAllUsers() {
     return await this.prisma.user.findMany({
       orderBy: {
         createdAt: 'desc',
       },
+
       include: {
         sellerProfile: true,
       },
@@ -24,6 +28,7 @@ export class UsersService {
       where: {
         role: 'CUSTOMER',
       },
+
       orderBy: {
         createdAt: 'desc',
       },
@@ -35,9 +40,11 @@ export class UsersService {
       where: {
         role: 'SELLER',
       },
+
       include: {
         sellerProfile: true,
       },
+
       orderBy: {
         createdAt: 'desc',
       },
@@ -49,6 +56,7 @@ export class UsersService {
       where: {
         role: 'ADMIN',
       },
+
       orderBy: {
         createdAt: 'desc',
       },
@@ -56,61 +64,85 @@ export class UsersService {
   }
 
   async getUserById(id: string) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id,
-      },
-      include: {
-        sellerProfile: true,
-        orders: true,
-        reviews: true,
-        favorites: true,
-        notifications: true,
-      },
-    })
+    const user =
+      await this.prisma.user.findUnique({
+        where: {
+          id,
+        },
+
+        include: {
+          sellerProfile: true,
+
+          orders: true,
+
+          reviews: true,
+
+          notifications: true,
+        },
+      })
 
     if (!user) {
-      throw new NotFoundException('User not found')
+      throw new NotFoundException(
+        'User not found',
+      )
     }
 
     return user
   }
 
-  async getUserByEmail(email: string) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email,
-      },
-      include: {
-        sellerProfile: true,
-      },
-    })
+  async getUserByEmail(
+    email: string,
+  ) {
+    const user =
+      await this.prisma.user.findUnique({
+        where: {
+          email,
+        },
+
+        include: {
+          sellerProfile: true,
+        },
+      })
 
     if (!user) {
-      throw new NotFoundException('User not found')
+      throw new NotFoundException(
+        'User not found',
+      )
     }
 
     return user
   }
 
-  async getUserProfile(id: string) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        phone: true,
-        profileImage: true,
-        role: true,
-        createdAt: true,
-      },
-    })
+  async getUserProfile(
+    id: string,
+  ) {
+    const user =
+      await this.prisma.user.findUnique({
+        where: {
+          id,
+        },
+
+        select: {
+          id: true,
+
+          fullName: true,
+
+          email: true,
+
+          phone: true,
+
+          profileImage: true,
+
+          role: true,
+
+          createdAt: true,
+        },
+      })
 
     if (!user) {
-      throw new NotFoundException('User not found')
+      throw new NotFoundException(
+        'User not found',
+      )
     }
 
     return user
@@ -142,10 +174,22 @@ export class UsersService {
         fullName:
           body.fullName,
 
-        phone: body.phone,
+        phone:
+          body.phone,
+      },
 
-        address:
-          body.address,
+      select: {
+        id: true,
+
+        fullName: true,
+
+        email: true,
+
+        phone: true,
+
+        profileImage: true,
+
+        role: true,
       },
     })
   }
