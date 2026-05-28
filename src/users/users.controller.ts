@@ -9,13 +9,14 @@ import {
 } from '@nestjs/common'
 
 import { UsersService } from './users.service'
+
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-  ) { }
+  ) {}
 
   @Get()
   async getAllUsers() {
@@ -41,21 +42,19 @@ export class UsersController {
   async getUserProfile(
     @Param('id') id: string,
   ) {
-    return await this.usersService.getUserProfile(id)
-  }
-
-  @Get(':id')
-  async getUserById(
-    @Param('id') id: string,
-  ) {
-    return await this.usersService.getUserById(id)
+    return await this.usersService.getUserProfile(
+      id,
+    )
   }
 
   @Get('email/:email')
   async getUserByEmail(
-    @Param('email') email: string,
+    @Param('email')
+    email: string,
   ) {
-    return await this.usersService.getUserByEmail(email)
+    return await this.usersService.getUserByEmail(
+      email,
+    )
   }
 
   @UseGuards(JwtAuthGuard)
@@ -78,6 +77,15 @@ export class UsersController {
     return await this.usersService.updateProfile(
       req.user.id,
       body,
+    )
+  }
+
+  @Get(':id')
+  async getUserById(
+    @Param('id') id: string,
+  ) {
+    return await this.usersService.getUserById(
+      id,
     )
   }
 }
