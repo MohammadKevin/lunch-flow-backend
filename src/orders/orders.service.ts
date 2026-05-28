@@ -28,6 +28,27 @@ export class OrdersService {
   userId: string,
   createOrderDto: CreateOrderDto,
 ) {
+  const cart =
+    await this.prisma.cart.findFirst({
+      where: {
+        userId,
+      },
+
+      include: {
+        items: {
+          include: {
+            menu: true,
+          },
+        },
+      },
+    })
+
+  if (!cart || cart.items.length === 0) {
+    throw new BadRequestException(
+      'Cart is empty',
+    )
+  }
+
   const seller =
     await this.prisma.seller.findUnique({
       where: {
@@ -39,6 +60,19 @@ export class OrdersService {
     throw new NotFoundException(
       'Seller not found',
     )
+  }
+
+  let totalPrice = 0
+
+  for (const item of cart.items) {
+    if (item.menu.stock < item.quantity) {
+      throw new BadRequestException(
+        `Insufficient stock for ${item.menu.name}`,
+      )
+    }
+
+    totalPrice +=
+      item.menu.price * item.quantity
   }
 
   const sellerQueueCount =
@@ -100,7 +134,24 @@ export class OrdersService {
         notes:
           createOrderDto.notes,
 
-        totalPrice: 0,
+        totalPrice,
+
+        items: {
+          create:
+            cart.items.map((item) => ({
+              menuId: item.menuId,
+
+              quantity: item.quantity,
+
+              price: item.menu.price,
+
+              subtotal:
+                item.menu.price *
+                item.quantity,
+
+              notes: item.notes,
+            })),
+        },
 
         payment: {
           create: {
@@ -130,6 +181,12 @@ export class OrdersService {
       },
 
       include: {
+        items: {
+          include: {
+            menu: true,
+          },
+        },
+
         payment: true,
 
         queue: true,
@@ -139,6 +196,26 @@ export class OrdersService {
         seller: true,
       },
     })
+
+  for (const item of cart.items) {
+    await this.prisma.menu.update({
+      where: {
+        id: item.menuId,
+      },
+
+      data: {
+        stock: {
+          decrement: item.quantity,
+        },
+      },
+    })
+  }
+
+  await this.prisma.cartItem.deleteMany({
+    where: {
+      cartId: cart.id,
+    },
+  })
 
   await this.notificationsService.createNotification(
     order.userId,
