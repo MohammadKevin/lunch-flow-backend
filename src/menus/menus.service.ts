@@ -24,7 +24,10 @@ export class MenusService {
     file?: Express.Multer.File,
   ) {
     let image: string | undefined
-    let imagePublicId: string | undefined
+
+    let imagePublicId:
+      | string
+      | undefined
 
     if (file) {
       const uploaded =
@@ -35,7 +38,8 @@ export class MenusService {
 
       image = uploaded.url
 
-      imagePublicId = uploaded.publicId
+      imagePublicId =
+        uploaded.publicId
     }
 
     return await this.prisma.menu.create({
@@ -45,7 +49,8 @@ export class MenusService {
         categoryId:
           createMenuDto.categoryId,
 
-        name: createMenuDto.name,
+        name:
+          createMenuDto.name,
 
         description:
           createMenuDto.description,
@@ -54,9 +59,11 @@ export class MenusService {
 
         imagePublicId,
 
-        price: createMenuDto.price,
+        price:
+          createMenuDto.price,
 
-        stock: createMenuDto.stock,
+        stock:
+          createMenuDto.stock,
 
         isAvailable:
           createMenuDto.isAvailable,
@@ -137,10 +144,50 @@ export class MenusService {
           id,
         },
 
-        include: {
-          seller: true,
+        select: {
+          id: true,
 
-          category: true,
+          sellerId: true,
+
+          categoryId: true,
+
+          name: true,
+
+          description: true,
+
+          image: true,
+
+          imagePublicId: true,
+
+          price: true,
+
+          stock: true,
+
+          isAvailable: true,
+
+          isRecommended: true,
+
+          preparationTime: true,
+
+          createdAt: true,
+
+          updatedAt: true,
+
+          seller: {
+            select: {
+              id: true,
+
+              storeName: true,
+            },
+          },
+
+          category: {
+            select: {
+              id: true,
+
+              name: true,
+            },
+          },
 
           reviews: {
             include: {
@@ -184,7 +231,9 @@ export class MenusService {
       | undefined
 
     if (file) {
-      if (menu.imagePublicId) {
+      if (
+        menu.imagePublicId
+      ) {
         await this.cloudinaryService.deleteFile(
           menu.imagePublicId,
         )
@@ -197,6 +246,7 @@ export class MenusService {
         )
 
       image = uploaded.url
+
       imagePublicId =
         uploaded.publicId
     }
@@ -234,7 +284,9 @@ export class MenusService {
       )
     }
 
-    if (menu.imagePublicId) {
+    if (
+      menu.imagePublicId
+    ) {
       await this.cloudinaryService.deleteFile(
         menu.imagePublicId,
       )
@@ -245,10 +297,5 @@ export class MenusService {
         id,
       },
     })
-
-    return {
-      message:
-        'Menu deleted successfully',
-    }
   }
 }
