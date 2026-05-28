@@ -16,41 +16,63 @@ export class CartService {
   ) {}
 
   async getCart(userId: string) {
-    const cart =
-      await this.prisma.cart.findUnique({
-        where: {
+  let cart =
+    await this.prisma.cart.findUnique({
+      where: {
+        userId,
+      },
+
+      include: {
+        items: {
+          include: {
+            menu: {
+              include: {
+                seller: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+  if (!cart) {
+    cart =
+      await this.prisma.cart.create({
+        data: {
           userId,
         },
 
         include: {
           items: {
             include: {
-              menu: true,
+              menu: {
+                include: {
+                  seller: true,
+                },
+              },
             },
           },
         },
       })
-
-    if (!cart) {
-      throw new NotFoundException(
-        'Cart not found',
-      )
-    }
-
-    const totalPrice =
-      cart.items.reduce(
-        (total, item) =>
-          total +
-          item.menu.price * item.quantity,
-        0,
-      )
-
-    return {
-      ...cart,
-
-      totalPrice,
-    }
   }
+
+  const totalPrice =
+    cart.items.reduce(
+      (total, item) => {
+        return (
+          total +
+          item.menu.price *
+            item.quantity
+        )
+      },
+      0,
+    )
+
+  return {
+    ...cart,
+    totalPrice,
+  }
+}
 
   async addToCart(
     userId: string,
