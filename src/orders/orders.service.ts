@@ -25,204 +25,146 @@ export class OrdersService {
   ) {}
 
   async createOrder(
-    userId: string,
-    createOrderDto: CreateOrderDto,
-  ) {
-    const cart =
-      await this.prisma.cart.findUnique({
-        where: {
-          userId,
-        },
-
-        include: {
-          items: {
-            include: {
-              menu: true,
-            },
-          },
-        },
-      })
-
-    if (!cart || cart.items.length === 0) {
-      throw new BadRequestException(
-        'Cart is empty',
-      )
-    }
-
-    let totalPrice = 0
-
-    for (const item of cart.items) {
-      if (item.menu.stock < item.quantity) {
-        throw new BadRequestException(
-          `Insufficient stock for ${item.menu.name}`,
-        )
-      }
-
-      totalPrice +=
-        item.menu.price * item.quantity
-    }
-
-    const sellerQueueCount =
-      await this.prisma.order.count({
-        where: {
-          sellerId:
-            createOrderDto.sellerId,
-
-          createdAt: {
-            gte: new Date(
-              new Date().setHours(
-                0,
-                0,
-                0,
-                0,
-              ),
-            ),
-          },
-        },
-      })
-
-    const queueNumber =
-      sellerQueueCount + 1
-
-    const orderCode = `ORD-${Date.now()}`
-
-    const pickupCode = `PK-${Math.floor(
-      100 + Math.random() * 900,
-    )}`
-
-    const order =
-      await this.prisma.order.create({
-        data: {
-          userId,
-
-          sellerId:
-            createOrderDto.sellerId,
-
-          orderCode,
-
-          orderType:
-            createOrderDto.orderType,
-
-          queueNumber:
-            createOrderDto.orderType ===
-            'PICKUP'
-              ? queueNumber
-              : null,
-
-          pickupCode:
-            createOrderDto.orderType ===
-            'PICKUP'
-              ? pickupCode
-              : null,
-
-          deliveryAddress:
-            createOrderDto.deliveryAddress,
-
-          totalPrice,
-
-          notes:
-            createOrderDto.notes,
-
-          items: {
-            create:
-              cart.items.map((item) => ({
-                menuId: item.menuId,
-
-                quantity: item.quantity,
-
-                price: item.menu.price,
-
-                subtotal:
-                  item.menu.price *
-                  item.quantity,
-
-                notes: item.notes,
-              })),
-          },
-
-          payment: {
-            create: {
-              paymentMethod:
-                createOrderDto.paymentMethod,
-
-              paymentStatus:
-                PaymentStatus.UNPAID,
-            },
-          },
-
-          queue:
-            createOrderDto.orderType ===
-            'PICKUP'
-              ? {
-                  create: {
-                    queueNumber,
-
-                    currentPosition:
-                      queueNumber,
-
-                    estimatedWait:
-                      queueNumber * 5,
-                  },
-                }
-              : undefined,
-        },
-
-        include: {
-          items: true,
-
-          payment: true,
-
-          queue: true,
-
-          user: true,
-        },
-      })
-
-    for (const item of cart.items) {
-      await this.prisma.menu.update({
-        where: {
-          id: item.menuId,
-        },
-
-        data: {
-          stock: {
-            decrement: item.quantity,
-          },
-        },
-      })
-    }
-
-    await this.prisma.cartItem.deleteMany({
+  userId: string,
+  createOrderDto: CreateOrderDto,
+) {
+  const seller =
+    await this.prisma.seller.findUnique({
       where: {
-        cartId: cart.id,
+        id: createOrderDto.sellerId,
       },
     })
 
-    await this.notificationsService.createNotification(
-      order.userId,
-
-      {
-        title: 'Order Created',
-
-        message: `Pesanan kamu berhasil dibuat dengan kode ${order.orderCode}`,
-      },
+  if (!seller) {
+    throw new NotFoundException(
+      'Seller not found',
     )
-
-    if (order.user.phone) {
-      await this.notificationsService.sendWhatsappNotification(
-        order.user.phone,
-
-        `Pesanan kamu berhasil dibuat 🍔\n\nOrder Code: ${order.orderCode}`,
-      )
-    }
-
-    return {
-      message:
-        'Order created successfully',
-
-      order,
-    }
   }
+
+  const sellerQueueCount =
+    await this.prisma.order.count({
+      where: {
+        sellerId:
+          createOrderDto.sellerId,
+
+        createdAt: {
+          gte: new Date(
+            new Date().setHours(
+              0,
+              0,
+              0,
+              0,
+            ),
+          ),
+        },
+      },
+    })
+
+  const queueNumber =
+    sellerQueueCount + 1
+
+  const orderCode = `ORD-${Date.now()}`
+
+  const pickupCode = `PK-${Math.floor(
+    100 + Math.random() * 900,
+  )}`
+
+  const order =
+    await this.prisma.order.create({
+      data: {
+        userId,
+
+        sellerId:
+          createOrderDto.sellerId,
+
+        orderCode,
+
+        orderType:
+          createOrderDto.orderType,
+
+        queueNumber:
+          createOrderDto.orderType ===
+          'PICKUP'
+            ? queueNumber
+            : null,
+
+        pickupCode:
+          createOrderDto.orderType ===
+          'PICKUP'
+            ? pickupCode
+            : null,
+
+        deliveryAddress:
+          createOrderDto.deliveryAddress,
+
+        notes:
+          createOrderDto.notes,
+
+        totalPrice: 0,
+
+        payment: {
+          create: {
+            paymentMethod:
+              createOrderDto.paymentMethod,
+
+            paymentStatus:
+              PaymentStatus.UNPAID,
+          },
+        },
+
+        queue:
+          createOrderDto.orderType ===
+          'PICKUP'
+            ? {
+                create: {
+                  queueNumber,
+
+                  currentPosition:
+                    queueNumber,
+
+                  estimatedWait:
+                    queueNumber * 5,
+                },
+              }
+            : undefined,
+      },
+
+      include: {
+        payment: true,
+
+        queue: true,
+
+        user: true,
+
+        seller: true,
+      },
+    })
+
+  await this.notificationsService.createNotification(
+    order.userId,
+
+    {
+      title: 'Order Created',
+
+      message: `Pesanan kamu berhasil dibuat dengan kode ${order.orderCode}`,
+    },
+  )
+
+  if (order.user.phone) {
+    await this.notificationsService.sendWhatsappNotification(
+      order.user.phone,
+
+      `Pesanan kamu berhasil dibuat 🍔\n\nOrder Code: ${order.orderCode}`,
+    )
+  }
+
+  return {
+    message:
+      'Order created successfully',
+
+    order,
+  }
+}
 
   async getAllOrders() {
     return await this.prisma.order.findMany({
