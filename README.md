@@ -12,19 +12,19 @@
 
 ---
 
-## 📌 Overview
+## Overview
 High-performance NestJS REST API supporting LunchFlow with meal scheduling, order orchestration, user management, and payment verification.
 
 ---
 
-## ✨ Key Features
+## Key Features
 - Menu scheduling and inventory quota management
 - Order status workflow (Pending, Confirmed, Preparing, Delivered)
 - Secure JWT authentication and role-based guards
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 - **Framework**: NestJS
 - **Language**: TypeScript
 - **ORM**: Prisma ORM
@@ -32,7 +32,7 @@ High-performance NestJS REST API supporting LunchFlow with meal scheduling, orde
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 ```text
 lunch-flow-backend/
 ├── src/
@@ -44,7 +44,7 @@ lunch-flow-backend/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 Make sure you have the required runtimes and tools installed on your machine:
@@ -61,7 +61,7 @@ npm run start:dev
 
 ---
 
-## 👤 Author
+## Author
 **Mohammad Kevin Arif Rudianto**
 - **GitHub:** [@MohammadKevin](https://github.com/MohammadKevin)
 - **Portfolio:** [portfolio-mohammadkevin.vercel.app](https://portfolio-mohammadkevin.vercel.app)
@@ -70,9 +70,9 @@ npm run start:dev
 
 ---
 
-## 📄 License
+## License
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
 <div align="center">
-⭐️ If you found this repository useful, please consider giving it a star!
+If you found this repository useful, please consider giving it a star!
 </div>
