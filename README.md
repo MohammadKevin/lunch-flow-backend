@@ -18,9 +18,9 @@ High-performance NestJS REST API supporting LunchFlow with meal scheduling, orde
 ---
 
 ## ✨ Key Features
-- ⚡ **Menu scheduling and inventory quota management**: Menu scheduling and inventory quota management
-- ⚡ **Order status workflow (Pending, Confirmed, Preparing, Delivered)**: Order status workflow (Pending, Confirmed, Preparing, Delivered)
-- ⚡ **Secure JWT authentication and role-based guards**: Secure JWT authentication and role-based guards
+- Menu scheduling and inventory quota management
+- Order status workflow (Pending, Confirmed, Preparing, Delivered)
+- Secure JWT authentication and role-based guards
 
 ---
 
